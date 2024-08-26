@@ -1,59 +1,50 @@
-document.getElementById('infoForm').addEventListener('submit', function(event) {
+document.getElementById('inscriptionForm').addEventListener('submit', function(event) {
     event.preventDefault(); // Evita o envio do formulário para realizar a validação
 
     const nome = document.getElementById('nome').value.trim();
-    const idade = parseInt(document.getElementById('idade').value, 10);
+    const idade = document.getElementById('idade').value.trim();
     const cpf = document.getElementById('cpf').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const telefone = document.getElementById('telefone').value.trim();
+    const endereco = document.getElementById('endereco').value.trim();
 
-    if (!nome || !idade || !cpf) {
-        alert('Todos os campos são obrigatórios.');
+    // Validação do Nome: somente letras e acentos
+    if (!/^[A-Za-zÀ-ú\s]+$/.test(nome)) {
+        alert('O nome deve conter apenas letras e acentos.');
         return;
     }
 
-    if (idade < 0 || idade > 150) {
-        alert('A idade deve estar entre 0 e 150 anos.');
+    // Validação da Idade: números entre 1 e 110
+    const idadeNumero = parseInt(idade, 10);
+    if (!idade || isNaN(idadeNumero) || idadeNumero <= 0 || idadeNumero > 110) {
+        alert('A idade deve ser um número entre 1 e 110.');
         return;
     }
 
-    if (!validaCPF(cpf)) {
-        alert('CPF inválido.');
+    // Validação do CPF: exatamente 11 números
+    if (!/^\d{11}$/.test(cpf) || !validaCPF(cpf)) {
+        alert('CPF inválido. Deve conter exatamente 11 números.');
+        return;
+    }
+
+    // Validação do E-mail: formato básico de e-mail
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert('E-mail inválido. Deve conter um "@" e seguir o formato padrão.');
+        return;
+    }
+
+    // Validação do Telefone: 2 dígitos para DDD seguido de 9 números
+    if (!/^\d{2}\d{9}$/.test(telefone)) {
+        alert('Telefone inválido. Deve conter o DDD (2 dígitos) seguido de 9 números.');
+        return;
+    }
+
+    // Validação do Endereço: letras, números e acentos
+    if (!/^[A-Za-zÀ-ú0-9\s,]+$/.test(endereco)) {
+        alert('Endereço inválido. Deve conter apenas letras, números, espaços e acentos.');
         return;
     }
 
     // Se todos os campos estão válidos, você pode prosseguir com o envio do formulário
     alert('Formulário enviado com sucesso!');
 });
-
-function validaCPF(cpf) {
-    cpf = cpf.replace(/[^\d]/g, ''); // Remove caracteres não numéricos
-
-    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) {
-        return false; // Verifica se o CPF tem 11 dígitos ou é uma sequência repetida
-    }
-
-    let soma = 0;
-    let resto;
-
-    for (let i = 1; i <= 9; i++) {
-        soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
-    }
-
-    resto = (soma * 10) % 11;
-    if (resto === 10 || resto === 11) resto = 0;
-    if (resto !== parseInt(cpf.substring(9, 10))) {
-        return false;
-    }
-
-    soma = 0;
-    for (let i = 1; i <= 10; i++) {
-        soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
-    }
-
-    resto = (soma * 10) % 11;
-    if (resto === 10 || resto === 11) resto = 0;
-    if (resto !== parseInt(cpf.substring(10, 11))) {
-        return false;
-    }
-
-    return true; // CPF válido
-}
